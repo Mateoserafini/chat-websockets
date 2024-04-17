@@ -1,6 +1,6 @@
 import express from 'express';
 import exphbs from 'express-handlebars';
-import { Server as SocketServer } from 'socket.io'; // Corregido el nombre del import
+import { Server as SocketServer } from 'socket.io'; 
 
 const app = express();
 const PUERTO = 8080;
@@ -21,12 +21,15 @@ const httpServer = app.listen(PUERTO, () => {
     console.log(`Escuchando en el Puerto: ${PUERTO}`);
 });
 
-// Generamos una instancia de Socket.io del lado de backend.
 const io = new SocketServer(httpServer); 
 
 let messages = [];
+io.on("connection", (socket) => {
+    console.log("Nuevo usuario conectado");
 
-// Establecemos la conexión.
-io.on('connection', () => {
-    console.log('Nuevo usuario conectado');
-});
+    socket.on("message", data => {
+        messages.push(data);
+        io.emit("messagesLogs", messages);
+
+    })
+})
